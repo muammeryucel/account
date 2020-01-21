@@ -36,9 +36,9 @@ public class AccountController {
 				.build();
 	}
 
-	@PostMapping("/activate/{accountId}")
-	public ResponseEntity<?> activateAccount(@PathVariable("accountId") String accountId, @RequestParam("activation-code") String activationCode) {
-		accountService.activateAccount(accountId, activationCode);
+	@PostMapping("/activate/{phone}")
+	public ResponseEntity<?> activateAccount(@PathVariable("phone") String phoneNumber, @RequestParam("activation-code") String activationCode) {
+		accountService.activateAccount(phoneNumber, activationCode);
 		return ResponseEntity.ok().build();
 	}
 

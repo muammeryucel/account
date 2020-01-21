@@ -29,3 +29,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/account.*.db
