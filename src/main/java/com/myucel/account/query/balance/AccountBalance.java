@@ -15,6 +15,8 @@ public class AccountBalance extends BaseEntity {
 	@Column(name = "account_id")
 	private String accountId;
 
+	private Long version;
+	
 	private BigDecimal balance;
 
 	public AccountBalance() {
@@ -34,11 +36,19 @@ public class AccountBalance extends BaseEntity {
 		return balance;
 	}
 
-	void add(BigDecimal amount) {
+	void addToBalance(BigDecimal amount) {
 		balance = balance.add(amount);
 	}
 
-	void subtract(BigDecimal amount) {
+	void subtractFromBalance(BigDecimal amount) {
 		balance = balance.subtract(amount);
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 }

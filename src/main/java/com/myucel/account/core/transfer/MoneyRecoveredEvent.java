@@ -2,7 +2,9 @@ package com.myucel.account.core.transfer;
 
 import java.math.BigDecimal;
 
-public class MoneyRecoveredEvent {
+import com.myucel.account.core.AccountEvent;
+
+public class MoneyRecoveredEvent implements AccountEvent {
 
 	private final String senderId;
 	private final BigDecimal amount;

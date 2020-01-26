@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
-public class MoneyReceivedEvent {
+import com.myucel.account.core.AccountEvent;
+
+public class MoneyReceivedEvent implements AccountEvent {
 
 	private final String senderId;
 	private final String recipientId;

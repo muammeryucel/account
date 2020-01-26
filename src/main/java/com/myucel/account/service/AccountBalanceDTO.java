@@ -6,8 +6,8 @@ import com.myucel.account.query.balance.AccountBalance;
 
 public class AccountBalanceDTO {
 
-	private String accountId;
-	private BigDecimal balance;
+	private final String accountId;
+	private final BigDecimal balance;
 
 	public static AccountBalanceDTO of(AccountBalance entity) {
 		return entity == null ? null : new AccountBalanceDTO(entity);

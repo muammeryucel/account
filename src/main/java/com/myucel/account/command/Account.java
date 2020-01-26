@@ -3,9 +3,15 @@ package com.myucel.account.command;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventsourcing.EventSourcingHandler;
+import org.axonframework.eventsourcing.conflictresolution.ConflictResolver;
+import org.axonframework.eventsourcing.conflictresolution.Conflicts;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 
@@ -13,6 +19,10 @@ import com.myucel.account.core.activation.AccountActivatedEvent;
 import com.myucel.account.core.activation.ActivateAccountCommand;
 import com.myucel.account.core.activation.ActivationExpiredEvent;
 import com.myucel.account.core.activation.ExpireActivationCommand;
+import com.myucel.account.core.balance.DepositCommand;
+import com.myucel.account.core.balance.DepositedEvent;
+import com.myucel.account.core.balance.WithdrawCommand;
+import com.myucel.account.core.balance.WithdrawnEvent;
 import com.myucel.account.core.exception.UnexpectedAccountStatusException;
 import com.myucel.account.core.registration.AccountCreatedEvent;
 import com.myucel.account.core.registration.CreateAccountCommand;
@@ -25,6 +35,14 @@ import com.myucel.account.core.transfer.SendMoneyCommand;
 
 @Aggregate(snapshotTriggerDefinition = "defaultSnapshotTriggerDefinition")
 public class Account {
+
+	private static final List<Class<? extends Object>> BALANCE_CHANGING_EVENT_TYPES = Arrays
+			.asList(DepositedEvent.class, WithdrawnEvent.class, MoneySentEvent.class, MoneyReceivedEvent.class);;
+
+	private static Predicate<List<DomainEventMessage<?>>> balanceChangingEventMatching() {
+		return Conflicts.payloadMatching(event -> BALANCE_CHANGING_EVENT_TYPES.stream()
+				.anyMatch(type -> type.isAssignableFrom(event.getClass())));
+	}
 
 	@AggregateIdentifier
 	private String accountId;
@@ -71,6 +89,30 @@ public class Account {
 	}
 
 	@CommandHandler
+	public void handle(DepositCommand command, ConflictResolver conflictResolver) {
+		conflictResolver.detectConflicts(balanceChangingEventMatching());
+		assertStatus(AccountStatus.ACTIVE);
+		apply(new DepositedEvent(accountId, command.getAmount()));
+	}
+
+	@EventSourcingHandler
+	public void on(DepositedEvent event) {
+		addToBalance(event.getAmount());
+	}
+
+	@CommandHandler
+	public void handle(WithdrawCommand command, ConflictResolver conflictResolver) {
+		conflictResolver.detectConflicts(balanceChangingEventMatching());
+		assertStatus(AccountStatus.ACTIVE);
+		apply(new WithdrawnEvent(accountId, command.getAmount()));
+	}
+
+	@EventSourcingHandler
+	public void on(WithdrawnEvent event) {
+		subtractFromBalance(event.getAmount());
+	}
+
+	@CommandHandler
 	public void handle(SendMoneyCommand command) {
 		assertStatus(AccountStatus.ACTIVE);
 		apply(new MoneySentEvent(accountId, command.getRecipientId(), command.getAmount()));
@@ -78,7 +120,7 @@ public class Account {
 
 	@EventSourcingHandler
 	public void on(MoneySentEvent event) {
-		subtract(event.getAmount());
+		subtractFromBalance(event.getAmount());
 	}
 
 	@CommandHandler
@@ -89,7 +131,7 @@ public class Account {
 
 	@EventSourcingHandler
 	public void on(MoneyReceivedEvent event) {
-		add(event.getAmount());
+		addToBalance(event.getAmount());
 	}
 
 	@CommandHandler
@@ -99,14 +141,14 @@ public class Account {
 
 	@EventSourcingHandler
 	public void on(MoneyRecoveredEvent event) {
-		add(event.getAmount());
+		addToBalance(event.getAmount());
 	}
 
-	private void add(BigDecimal amount) {
+	private void addToBalance(BigDecimal amount) {
 		balance = balance.add(amount);
 	}
 
-	private void subtract(BigDecimal amount) {
+	private void subtractFromBalance(BigDecimal amount) {
 		balance = balance.subtract(amount);
 	}
 

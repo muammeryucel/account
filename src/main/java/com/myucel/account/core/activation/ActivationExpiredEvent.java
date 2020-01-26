@@ -1,6 +1,8 @@
 package com.myucel.account.core.activation;
 
-public class ActivationExpiredEvent {
+import com.myucel.account.core.AccountEvent;
+
+public class ActivationExpiredEvent implements AccountEvent {
 
 	private final String accountId;
 

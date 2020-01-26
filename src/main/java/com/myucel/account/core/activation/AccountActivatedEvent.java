@@ -1,6 +1,8 @@
 package com.myucel.account.core.activation;
 
-public class AccountActivatedEvent {
+import com.myucel.account.core.AccountEvent;
+
+public class AccountActivatedEvent implements AccountEvent {
 
 	private final String accountId;
 

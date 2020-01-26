@@ -2,7 +2,9 @@ package com.myucel.account.core.registration;
 
 import java.math.BigDecimal;
 
-public class AccountCreatedEvent {
+import com.myucel.account.core.AccountEvent;
+
+public class AccountCreatedEvent implements AccountEvent {
 
 	private final String accountId;
 	private final String phoneNumber;

@@ -32,7 +32,7 @@ public class ActivationSaga {
 	private static final String ASSOCIATION_PROPERTY_PHONE_NUMBER = "phoneNumber";
 
 	private static final String ACTIVATION_DEADLINE = "activation-deadline";
-	private static final Duration ACTIVATION_TIMEOUT = Duration.ofSeconds(15);
+	private static final Duration ACTIVATION_TIMEOUT = Duration.ofSeconds(120);
 
 	private static final Log LOGGER = LogFactory.getLog(ActivationSaga.class);
 
@@ -45,6 +45,7 @@ public class ActivationSaga {
 	@Autowired
 	private transient SmsService smsService;
 
+	private String accountId;
 	private String activationCode;
 	private String activationScheduleId;
 
@@ -52,19 +53,19 @@ public class ActivationSaga {
 	@SagaEventHandler(associationProperty = ASSOCIATION_PROPERTY_ACCOUNT_ID)
 	public void on(AccountCreatedEvent event) {
 
-		String accountId = event.getAccountId();
+		accountId = event.getAccountId();
 		String phoneNumber = event.getPhoneNumber();
 
 		associateWith(ASSOCIATION_PROPERTY_PHONE_NUMBER, phoneNumber);
 
-		activationScheduleId = deadlineManager.schedule(ACTIVATION_TIMEOUT, ACTIVATION_DEADLINE, accountId);
+		activationScheduleId = deadlineManager.schedule(ACTIVATION_TIMEOUT, ACTIVATION_DEADLINE);
 		activationCode = generateActivationCode();
 		smsService.sendActivationCode(phoneNumber, activationCode);
 		LOGGER.info("Waiting for activation: " + accountId);
 	}
 
 	@SagaEventHandler(associationProperty = ASSOCIATION_PROPERTY_PHONE_NUMBER)
-	public void on(ActivationRequestedEvent event, @SourceId String accountId) {
+	public void on(ActivationRequestedEvent event) {
 
 		if (activationCode.equals(event.getActivationCode())) {
 			deadlineManager.cancelSchedule(ACTIVATION_DEADLINE, activationScheduleId);
@@ -81,7 +82,7 @@ public class ActivationSaga {
 	}
 
 	@DeadlineHandler(deadlineName = ACTIVATION_DEADLINE)
-	public void handleActivationExpiration(String accountId) {
+	public void handleActivationExpiration() {
 		commandGateway.sendAndWait(new ExpireActivationCommand(accountId));
 	}
 

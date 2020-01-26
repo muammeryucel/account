@@ -7,8 +7,9 @@ import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.myucel.account.core.activation.ActivateAccountCommand;
 import com.myucel.account.core.activation.ActivationRequestedEvent;
+import com.myucel.account.core.balance.DepositCommand;
+import com.myucel.account.core.balance.WithdrawCommand;
 import com.myucel.account.core.registration.CreateAccountCommand;
 import com.myucel.account.core.transfer.SendMoneyCommand;
 
@@ -35,6 +36,14 @@ public class AccountService {
 
 	public void transfer(String senderId, String recipientId, BigDecimal amount) {
 		commandGateway.sendAndWait(new SendMoneyCommand(senderId, recipientId, amount));
+	}
+
+	public void deposit(String accountId, Long version, BigDecimal amount) {
+		commandGateway.sendAndWait(new DepositCommand(accountId, version, amount));
+	}
+
+	public void withdraw(String accountId, Long version, BigDecimal amount) {
+		commandGateway.sendAndWait(new WithdrawCommand(accountId, version, amount));
 	}
 
 }

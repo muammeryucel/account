@@ -1,8 +1,11 @@
 package com.myucel.account.query.balance;
 
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.eventhandling.SequenceNumber;
 import org.springframework.stereotype.Component;
 
+import com.myucel.account.core.balance.DepositedEvent;
+import com.myucel.account.core.balance.WithdrawnEvent;
 import com.myucel.account.core.registration.AccountCreatedEvent;
 import com.myucel.account.core.transfer.MoneyReceivedEvent;
 import com.myucel.account.core.transfer.MoneyRecoveredEvent;
@@ -19,23 +22,50 @@ public class AccountBalanceProjector {
 	}
 
 	@EventHandler
-	public void on(AccountCreatedEvent event) {
-		repository.save(new AccountBalance(event.getAccountId(), event.getInitialBalance()));
+	public void on(AccountCreatedEvent event, @SequenceNumber Long version) {
+		AccountBalance account = new AccountBalance(event.getAccountId(), event.getInitialBalance());
+		account.setVersion(version);
+		repository.save(account);
 	}
 
 	@EventHandler
-	public void on(MoneySentEvent event) {
-		getAccount(event.getSenderId()).subtract(event.getAmount());
+	public void on(DepositedEvent event, @SequenceNumber Long version) {
+		AccountBalance account = getAccount(event.getAccountId());
+		account.setVersion(version);
+		account.addToBalance(event.getAmount());
+		repository.save(account);
 	}
 
 	@EventHandler
-	public void on(MoneyReceivedEvent event) {
-		getAccount(event.getRecipientId()).add(event.getAmount());
+	public void on(WithdrawnEvent event, @SequenceNumber Long version) {
+		AccountBalance account = getAccount(event.getAccountId());
+		account.setVersion(version);
+		account.subtractFromBalance(event.getAmount());
+		repository.save(account);
 	}
-	
+
 	@EventHandler
-	public void on(MoneyRecoveredEvent event) {
-		getAccount(event.getSenderId()).add(event.getAmount());
+	public void on(MoneySentEvent event, @SequenceNumber Long version) {
+		AccountBalance account = getAccount(event.getSenderId());
+		account.setVersion(version);
+		account.subtractFromBalance(event.getAmount());
+		repository.save(account);
+	}
+
+	@EventHandler
+	public void on(MoneyReceivedEvent event, @SequenceNumber Long version) {
+		AccountBalance account = getAccount(event.getRecipientId());
+		account.setVersion(version);
+		account.addToBalance(event.getAmount());
+		repository.save(account);
+	}
+
+	@EventHandler
+	public void on(MoneyRecoveredEvent event, @SequenceNumber Long version) {
+		AccountBalance account = getAccount(event.getSenderId());
+		account.setVersion(version);
+		account.addToBalance(event.getAmount());
+		repository.save(account);
 	}
 
 	private AccountBalance getAccount(String accountId) {
