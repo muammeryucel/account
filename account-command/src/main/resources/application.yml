@@ -16,3 +16,12 @@ spring:
 logging:
   level:
     org.axonframework: debug
+    
+---        
+spring:
+  profiles: rabbit
+axon:
+  amqp:
+    exchange: account.events
+    
+    

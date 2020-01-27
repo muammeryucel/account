@@ -3,6 +3,7 @@ package com.myucel.account.info;
 import java.time.Instant;
 import java.util.Date;
 
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.Timestamp;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import com.myucel.account.api.activation.ActivationExpiredEvent;
 import com.myucel.account.api.registration.AccountCreatedEvent;
 
 @Component
+@ProcessingGroup("info")
 public class AccountInfoProjector {
 
 	private final AccountInfoRepository repository;
@@ -33,7 +35,9 @@ public class AccountInfoProjector {
 		AccountInfo account = getAccount(event.getAccountId());
 		account.setActivationDate(Date.from(activationDate));
 		account.setStatus("Activated");
-		repository.save(account);
+		repository.save(account);	
+		
+//		throw new RuntimeException("Test Exception!");
 	}
 
 	@EventHandler

@@ -14,3 +14,16 @@ spring:
 logging:
   level:
     org.axonframework: debug
+    
+---
+spring:
+  profiles: rabbit
+application:
+  exchange: account.events
+  queue: account.info
+axon:
+  eventhandling:
+    processors:
+      info:
+        source: amqpMessageSource
+        mode: subscribing

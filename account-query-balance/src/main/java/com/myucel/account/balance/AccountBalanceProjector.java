@@ -1,5 +1,6 @@
 package com.myucel.account.balance;
 
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.SequenceNumber;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import com.myucel.account.api.transfer.MoneyRecoveredEvent;
 import com.myucel.account.api.transfer.MoneySentEvent;
 
 @Component
+@ProcessingGroup("balance")
 public class AccountBalanceProjector {
 
 	private final AccountBalanceRepository repository;

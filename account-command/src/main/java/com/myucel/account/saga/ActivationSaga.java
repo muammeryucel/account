@@ -93,6 +93,7 @@ public class ActivationSaga {
 	}
 
 	private String generateActivationCode() {
-		return String.valueOf((int) Math.round(Math.random() * 1000));
+		//return String.valueOf((int) Math.round(Math.random() * 1000));
+		return "111";
 	}
 }
