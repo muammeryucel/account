@@ -1,7 +1,9 @@
-package com.myucel.account.info;
+package com.myucel.account.info.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.myucel.account.info.domain.AccountInfo;
 
 public class AccountInfoDTO {
 

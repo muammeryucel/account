@@ -1,6 +1,8 @@
-package com.myucel.account.balance;
+package com.myucel.account.balance.service;
 
 import java.math.BigDecimal;
+
+import com.myucel.account.balance.domain.AccountBalance;
 
 public class AccountBalanceDTO {
 

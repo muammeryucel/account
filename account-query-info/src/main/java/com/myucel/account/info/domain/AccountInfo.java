@@ -1,4 +1,4 @@
-package com.myucel.account.info;
+package com.myucel.account.info.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;

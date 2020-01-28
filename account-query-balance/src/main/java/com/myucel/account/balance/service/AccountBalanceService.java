@@ -1,10 +1,12 @@
-package com.myucel.account.balance;
+package com.myucel.account.balance.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.myucel.account.balance.domain.AccountBalanceRepository;
 
 @Service
 @Transactional(readOnly = true)

@@ -1,4 +1,4 @@
-package com.myucel.account.info;
+package com.myucel.account.info.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

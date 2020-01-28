@@ -1,4 +1,4 @@
-package com.myucel.account.balance;
+package com.myucel.account.balance.domain;
 
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;

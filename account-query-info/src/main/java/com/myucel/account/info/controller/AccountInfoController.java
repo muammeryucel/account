@@ -1,10 +1,13 @@
-package com.myucel.account.info;
+package com.myucel.account.info.controller;
 
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.myucel.account.info.service.AccountInfoDTO;
+import com.myucel.account.info.service.AccountInfoService;
 
 @RestController
 public class AccountInfoController {
