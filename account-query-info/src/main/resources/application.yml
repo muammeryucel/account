@@ -27,3 +27,27 @@ axon:
       info:
         source: amqpMessageSource
         mode: subscribing
+        
+---
+spring:
+  profiles: kafka
+axon:
+  eventhandling:
+    processors:
+      info:
+        source: kafkaMessageSource
+        mode: tracking
+  kafka:
+    bootstrap-servers: localhost:9092
+    client-id: account-query-info
+    default-topic: account.events
+    properties:
+      security.protocol: PLAINTEXT
+    fetcher:
+      poll-timeout: 3000                    #Default value
+    consumer:
+      group-id: account-query-info
+      enable-auto-commit: true              #Enable auto-commit consumer offsets to the kafka server
+      auto-commit-interval: 3000            #Auto-commit interval for consumer offsets
+      
+      

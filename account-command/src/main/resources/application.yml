@@ -23,5 +23,17 @@ spring:
 axon:
   amqp:
     exchange: account.events
-    
+   
+---
+spring:
+  profiles: kafka
+axon:
+  kafka:
+    bootstrap-servers: localhost:9092
+    client-id: account-command
+    default-topic: account.events
+    properties:
+      security.protocol: PLAINTEXT
+    producer:
+      transaction-id-prefix: account        #Enables kafka's transaction support
     
