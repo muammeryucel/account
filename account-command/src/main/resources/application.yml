@@ -16,7 +16,14 @@ spring:
 logging:
   level:
     org.axonframework: debug
-    
+
+---
+spring:
+  profiles: jdbc
+  datasource:
+    initialization-mode: ALWAYS
+    platform: jdbc
+      
 ---        
 spring:
   profiles: rabbit

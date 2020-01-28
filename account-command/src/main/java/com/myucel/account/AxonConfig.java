@@ -8,9 +8,13 @@ import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.SnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.Snapshotter;
 import org.axonframework.spring.config.AxonConfiguration;
+import org.axonframework.springboot.autoconfig.AxonServerAutoConfiguration;
+import org.axonframework.springboot.autoconfig.JpaEventStoreAutoConfiguration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class AxonConfig {
@@ -25,5 +29,19 @@ public class AxonConfig {
 	public DeadlineManager deadlineManager(AxonConfiguration configuration, TransactionManager transactionManager) {
 		return SimpleDeadlineManager.builder().scopeAwareProvider(new ConfigurationScopeAwareProvider(configuration))
 				.transactionManager(transactionManager).build();
+	}
+
+	@Configuration
+	@Profile("jpa")
+	@EnableAutoConfiguration(exclude = AxonServerAutoConfiguration.class)
+	public static class JpaEventStoreConfig {
+
+	}
+
+	@Configuration
+	@Profile("jdbc")
+	@EnableAutoConfiguration(exclude = { AxonServerAutoConfiguration.class, JpaEventStoreAutoConfiguration.class })
+	public static class JdbcEventStoreConfig {
+
 	}
 }
