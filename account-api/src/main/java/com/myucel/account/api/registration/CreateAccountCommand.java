@@ -1,6 +1,7 @@
 package com.myucel.account.api.registration;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.myucel.account.api.BaseCommand;
@@ -13,7 +14,8 @@ public class CreateAccountCommand extends BaseCommand {
 	private final BigDecimal initialBalance;
 
 	public CreateAccountCommand(String phoneNumber, BigDecimal initialBalance) {
-		super(String.valueOf(ID_PROVIDER.incrementAndGet()));
+		//super(String.valueOf(ID_PROVIDER.incrementAndGet()));
+		super(UUID.randomUUID().toString());
 		this.phoneNumber = phoneNumber;
 		this.initialBalance = initialBalance;
 	}

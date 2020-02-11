@@ -1,10 +1,15 @@
 package com.myucel.account.info;
 
+import java.util.Collections;
+
 import org.axonframework.extensions.amqp.eventhandling.AMQPMessageConverter;
 import org.axonframework.extensions.amqp.eventhandling.spring.SpringAMQPMessageSource;
 import org.axonframework.springboot.autoconfig.AxonServerAutoConfiguration;
+import org.springframework.amqp.core.AbstractExchange;
 import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.Queue;
@@ -24,12 +29,15 @@ import com.rabbitmq.client.Channel;
 @EnableAutoConfiguration(exclude = { AxonServerAutoConfiguration.class })
 public class RabbitConfig {
 
+	private static final String CONSISTENT_HASH_SUFFIX = ".consistent.hash";
+	private static final String CONSISTENT_HASH_QUEUE_TYPE = "x-consistent-hash";
+
 	@Bean
 	public SpringAMQPMessageSource amqpMessageSource(AMQPMessageConverter messageConverter) {
 		return new SpringAMQPMessageSource(messageConverter) {
 
 			@Override
-			@RabbitListener(queues = "${application.queue}")
+			@RabbitListener(queues = "${application.queue}.${server.port}")
 			public void onMessage(Message message, Channel channel) {
 				super.onMessage(message, channel);
 			}
@@ -42,12 +50,32 @@ public class RabbitConfig {
 	}
 
 	@Bean
-	public Queue queue(@Value("${application.queue}") String name) {
+	public Exchange consistentHashExchange(@Value("${application.exchange}" + CONSISTENT_HASH_SUFFIX) String name) {
+		AbstractExchange exchange = new AbstractExchange(name) {
+
+			@Override
+			public String getType() {
+				return CONSISTENT_HASH_QUEUE_TYPE;
+			}
+		};
+		exchange.setInternal(true);
+		return exchange;
+	}
+
+	@Bean
+	public Binding consistentHashBinding(FanoutExchange exchange, Exchange consistentHashExchange) {
+		return BindingBuilder.bind(consistentHashExchange).to(exchange);
+	}
+
+	@Bean
+	public Queue queue(@Value("${application.queue}.${server.port}") String name) {
 		return new Queue(name);
 	}
 
 	@Bean
-	public Binding binding(FanoutExchange exchange, Queue queue) {
-		return BindingBuilder.bind(queue).to(exchange);
+	public Binding binding(@Value("${application.exchange}") String exchange,
+			@Value("${application.queue}.${server.port}") String queue) {
+		return new Binding(queue, DestinationType.QUEUE, exchange + CONSISTENT_HASH_SUFFIX, "1",
+				Collections.emptyMap());
 	}
 }

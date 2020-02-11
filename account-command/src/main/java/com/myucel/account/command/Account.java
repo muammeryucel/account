@@ -14,6 +14,8 @@ import org.axonframework.eventsourcing.conflictresolution.ConflictResolver;
 import org.axonframework.eventsourcing.conflictresolution.Conflicts;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.myucel.account.api.activation.AccountActivatedEvent;
 import com.myucel.account.api.activation.ActivateAccountCommand;
@@ -55,12 +57,21 @@ public class Account {
 	}
 
 	@CommandHandler
-	public Account(CreateAccountCommand command) {
+	public Account(CreateAccountCommand command) {		
 		apply(new AccountCreatedEvent(command.getAccountId(), command.getPhoneNumber(), command.getInitialBalance()));
 	}
 
 	@EventSourcingHandler
 	public void on(AccountCreatedEvent event) {
+		
+//		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+//			@Override
+//			public void beforeCommit(boolean readOnly) {
+//				super.beforeCommit(readOnly);
+//				throw new RuntimeException("Exception thrown on commit!");
+//			}
+//		});
+		
 		this.accountId = event.getAccountId();
 		this.balance = event.getInitialBalance();
 		this.status = AccountStatus.ACTIVATION_REQUIRED;

@@ -3,6 +3,7 @@ package com.myucel.account.service;
 import java.math.BigDecimal;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,12 @@ public class AccountService {
 
 	public void withdraw(String accountId, Long version, BigDecimal amount) {
 		commandGateway.sendAndWait(new WithdrawCommand(accountId, version, amount));
+	}
+
+	@EventHandler
+	public void handle(Object event) {
+		System.out.println("Event: " + event);
+		//throw new RuntimeException("Exception thrown whilst event handling!");
 	}
 
 }
