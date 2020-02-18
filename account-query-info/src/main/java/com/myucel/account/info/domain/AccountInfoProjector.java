@@ -28,6 +28,8 @@ public class AccountInfoProjector {
 		AccountInfo account = new AccountInfo(event.getAccountId(), event.getPhoneNumber(), event.getInitialBalance());
 		account.setCreationDate(Date.from(creationDate));
 		repository.save(account);
+		
+		throw new RuntimeException("Test Exception!");
 	}
 
 	@EventHandler

@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.axonframework.extensions.amqp.eventhandling.AMQPMessageConverter;
 import org.axonframework.extensions.amqp.eventhandling.spring.SpringAMQPMessageSource;
 import org.axonframework.springboot.autoconfig.AxonServerAutoConfiguration;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AbstractExchange;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Binding.DestinationType;
@@ -29,17 +30,26 @@ import com.rabbitmq.client.Channel;
 @EnableAutoConfiguration(exclude = { AxonServerAutoConfiguration.class })
 public class RabbitConfig {
 
+	private static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 	private static final String CONSISTENT_HASH_SUFFIX = ".consistent.hash";
 	private static final String CONSISTENT_HASH_QUEUE_TYPE = "x-consistent-hash";
+	private static final Long RETRY_COUNT = 3L;
 
 	@Bean
 	public SpringAMQPMessageSource amqpMessageSource(AMQPMessageConverter messageConverter) {
 		return new SpringAMQPMessageSource(messageConverter) {
 
 			@Override
-			@RabbitListener(queues = "${application.queue}.${server.port}")
+			@RabbitListener(queues = "${application.queue}")
 			public void onMessage(Message message, Channel channel) {
-				super.onMessage(message, channel);
+				try {
+					super.onMessage(message, channel);
+				} catch (Exception ex) {
+					if (message.getMessageProperties().getDeliveryTag() > RETRY_COUNT) {
+						throw new AmqpRejectAndDontRequeueException(ex);
+					}
+					throw ex;
+				}
 			}
 		};
 	}
@@ -68,13 +78,31 @@ public class RabbitConfig {
 	}
 
 	@Bean
-	public Queue queue(@Value("${application.queue}.${server.port}") String name) {
+	public Queue queue(@Value("${application.queue}") String name,
+			@Value("${application.dead-letter.exchange}") String deadLetterExchange) {
+		Queue queue = new Queue(name);
+		queue.addArgument(X_DEAD_LETTER_EXCHANGE, deadLetterExchange);
+		return queue;
+	}
+
+	@Bean
+	public FanoutExchange deadLetterExchange(@Value("${application.dead-letter.exchange}") String name) {
+		return new FanoutExchange(name);
+	}
+
+	@Bean
+	public Queue deadLetterQueue(@Value("${application.dead-letter.queue}") String name) {
 		return new Queue(name);
 	}
 
 	@Bean
+	public Binding bindingDeadLetter(FanoutExchange deadLetterExchange, Queue deadLetterQueue) {
+		return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange);
+	}
+
+	@Bean
 	public Binding binding(@Value("${application.exchange}") String exchange,
-			@Value("${application.queue}.${server.port}") String queue) {
+			@Value("${application.queue}") String queue) {
 		return new Binding(queue, DestinationType.QUEUE, exchange + CONSISTENT_HASH_SUFFIX, "1",
 				Collections.emptyMap());
 	}

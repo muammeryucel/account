@@ -20,7 +20,10 @@ spring:
   profiles: rabbit
 application:
   exchange: account.events
-  queue: account.info
+  queue: account.info.${server.port}
+  dead-letter:
+    exchange: account.info.dlx.${server.port}
+    queue: account.info.dlq.${server.port}
 axon:
   eventhandling:
     processors:
