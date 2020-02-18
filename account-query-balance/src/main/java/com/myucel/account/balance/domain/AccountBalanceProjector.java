@@ -5,6 +5,7 @@ import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.SequenceNumber;
 import org.springframework.stereotype.Component;
 
+import com.myucel.account.api.AccountEvent;
 import com.myucel.account.api.balance.DepositedEvent;
 import com.myucel.account.api.balance.WithdrawnEvent;
 import com.myucel.account.api.registration.AccountCreatedEvent;
@@ -68,6 +69,12 @@ public class AccountBalanceProjector {
 		account.setVersion(version);
 		account.addToBalance(event.getAmount());
 		repository.save(account);
+	}
+
+	@EventHandler
+	public void fallbackEventHandler(AccountEvent event) {
+		// It must be the last event handler --> Are you sure? Check it! 
+		System.out.println("Noop event handler: " + event);
 	}
 
 	private AccountBalance getAccount(String accountId) {

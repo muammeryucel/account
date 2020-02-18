@@ -5,12 +5,14 @@ import org.apache.commons.logging.LogFactory;
 import org.axonframework.config.Configurer;
 import org.axonframework.config.ConfigurerModule;
 import org.axonframework.eventhandling.DomainEventMessage;
+import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.messaging.InterceptorChain;
 import org.axonframework.messaging.MessageHandlerInterceptor;
 import org.axonframework.messaging.unitofwork.UnitOfWork;
 import org.springframework.stereotype.Component;
 
+import com.myucel.account.api.AccountEvent;
 import com.myucel.account.balance.ordercheck.AggregateVersion.AggregateVersionId;
 
 @Component
