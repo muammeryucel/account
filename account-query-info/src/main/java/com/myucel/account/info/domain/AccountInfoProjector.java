@@ -29,7 +29,7 @@ public class AccountInfoProjector {
 		account.setCreationDate(Date.from(creationDate));
 		repository.save(account);
 		
-		throw new RuntimeException("Test Exception!");
+//		throw new RuntimeException("Test Exception!");
 	}
 
 	@EventHandler

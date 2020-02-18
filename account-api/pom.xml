@@ -15,7 +15,7 @@
 			<artifactId>axon-modelling</artifactId>
 			<version>${axon.version}</version>
 			<scope>provided</scope>
-		</dependency>	
+		</dependency>
 	</dependencies>
 
 </project>

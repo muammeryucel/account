@@ -18,7 +18,7 @@ public class MoneyReceivedEvent implements AccountEvent {
 		this.recipientId = recipientId;
 		this.amount = amount;
 	}
-
+	
 	public String getSenderId() {
 		return senderId;
 	}

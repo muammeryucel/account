@@ -1,8 +1,8 @@
 package com.myucel.account.api.activation;
 
-import com.myucel.account.api.AccountEvent;
+import com.myucel.account.api.ExternalEvent;
 
-public class ActivationRequestedEvent implements AccountEvent {
+public class ActivationRequestedEvent implements ExternalEvent {
 
 	private final String phoneNumber;
 	private final String activationCode;
