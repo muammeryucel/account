@@ -40,12 +40,15 @@ public class MessageDuplicationAndOrderCheckingInterceptor
 
 			AggregateVersionId id = new AggregateVersionId(aggregateType, aggregateId);
 
-			if (newVersion == 0) {
-				repository.save(new AggregateVersion(id));
+			AggregateVersion aggregateVersion = repository.findById(id).orElse(null);
+			if (aggregateVersion == null) {
+				if (newVersion == 0) {
+					repository.save(new AggregateVersion(id));
+				} else {
+					throw new IllegalStateException("Unrecognized aggregate: " + id);
+				}
 			} else {
 				long previousVersion = newVersion - 1;
-				AggregateVersion aggregateVersion = repository.findById(id)
-						.orElseThrow(() -> new IllegalStateException("Unrecognized aggregate: " + id));
 				Long currentVersion = aggregateVersion.getAggregateVersion();
 				if (currentVersion >= newVersion) {
 					LOGGER.debug("Duplicate message detected and ignored: " + message);
