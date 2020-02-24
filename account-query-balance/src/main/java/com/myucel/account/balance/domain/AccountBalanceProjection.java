@@ -2,11 +2,28 @@ package com.myucel.account.balance.domain;
 
 import java.math.BigDecimal;
 
-public interface AccountBalanceProjection {
+public class AccountBalanceProjection {
 
-	String getAccountId();
+	private String accountId;
+	private BigDecimal balance;
+	private Long version;
 
-	BigDecimal getBalance();
+	public AccountBalanceProjection(String accountId, BigDecimal balance, Long version) {
+		super();
+		this.accountId = accountId;
+		this.balance = balance;
+		this.version = version;
+	}
 
-	Long getVersion();
+	public String getAccountId() {
+		return accountId;
+	}
+
+	public BigDecimal getBalance() {
+		return balance;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
 }
