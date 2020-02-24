@@ -2,15 +2,18 @@ package com.myucel.account.info.domain;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.Timestamp;
+import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Component;
 
 import com.myucel.account.api.activation.AccountActivatedEvent;
 import com.myucel.account.api.activation.ActivationExpiredEvent;
 import com.myucel.account.api.registration.AccountCreatedEvent;
+import com.myucel.account.info.query.FindAllQuery;
 
 @Component
 @ProcessingGroup("info")
@@ -48,6 +51,11 @@ public class AccountInfoProjector {
 		account.setExpirationDate(Date.from(expirationDate));
 		account.setStatus("Activation expired");
 		repository.save(account);
+	}
+	
+	@QueryHandler
+	public List<AccountInfoProjection> handleFindAllQuery(FindAllQuery query) {
+		return repository.findProjectionBy();
 	}
 
 	private AccountInfo getAccount(String accountId) {

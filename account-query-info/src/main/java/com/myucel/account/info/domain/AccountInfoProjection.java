@@ -1,11 +1,9 @@
-package com.myucel.account.info.service;
+package com.myucel.account.info.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.myucel.account.info.domain.AccountInfo;
-
-public class AccountInfoDTO {
+public class AccountInfoProjection {
 
 	private final String accountId;
 	private final BigDecimal initialBalance;
@@ -15,18 +13,16 @@ public class AccountInfoDTO {
 	private final Date activationDate;
 	private final Date expirationDate;
 
-	public static AccountInfoDTO of(AccountInfo entity) {
-		return entity == null ? null : new AccountInfoDTO(entity);
-	}
-
-	private AccountInfoDTO(AccountInfo entity) {
-		accountId = entity.getAccountId();
-		initialBalance = entity.getInitialBalance();
-		phoneNumber = entity.getPhoneNumber();
-		status = entity.getStatus();
-		creationDate = entity.getCreationDate();
-		activationDate = entity.getActivationDate();
-		expirationDate = entity.getExpirationDate();
+	public AccountInfoProjection(String accountId, BigDecimal initialBalance, String phoneNumber, String status,
+			Date creationDate, Date activationDate, Date expirationDate) {
+		super();
+		this.accountId = accountId;
+		this.initialBalance = initialBalance;
+		this.phoneNumber = phoneNumber;
+		this.status = status;
+		this.creationDate = creationDate;
+		this.activationDate = activationDate;
+		this.expirationDate = expirationDate;
 	}
 
 	public String getAccountId() {

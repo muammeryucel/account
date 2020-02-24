@@ -1,25 +1,26 @@
 package com.myucel.account.info.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.myucel.account.info.domain.AccountInfoRepository;
+import com.myucel.account.info.domain.AccountInfoProjection;
+import com.myucel.account.info.query.FindAllQuery;
 
 @Service
-@Transactional(readOnly = true)
 public class AccountInfoService {
 
-	private final AccountInfoRepository repository;
+	private final QueryGateway gateway;
 
-	public AccountInfoService(com.myucel.account.info.domain.AccountInfoRepository repository) {
+	public AccountInfoService(QueryGateway gateway) {
 		super();
-		this.repository = repository;
+		this.gateway = gateway;
 	}
 
-	public List<AccountInfoDTO> getAccounts() {
-		return repository.findAll().stream().map(AccountInfoDTO::of).collect(Collectors.toList());
+	public CompletableFuture<List<AccountInfoProjection>> getAccounts() {
+		return gateway.query(new FindAllQuery(), ResponseTypes.multipleInstancesOf(AccountInfoProjection.class));
 	}
 }

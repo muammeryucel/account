@@ -1,8 +1,8 @@
 package com.myucel.account.balance.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,12 +21,12 @@ public class AccountBalanceController {
 	}
 
 	@GetMapping("/balances/{accountId}")
-	public ResponseEntity<AccountBalanceProjection> getAccountBalance(@PathVariable("accountId") String accountId) {
-		return ResponseEntity.ok(service.getAccountBalance(accountId));
+	public CompletableFuture<AccountBalanceProjection> getAccountBalance(@PathVariable("accountId") String accountId) {
+		return service.getAccountBalance(accountId);
 	}
 
 	@GetMapping("/balances")
-	public ResponseEntity<List<AccountBalanceProjection>> getAccountBalances() {
-		return ResponseEntity.ok(service.getAccountBalances());
+	public CompletableFuture<List<AccountBalanceProjection>> getAccountBalances() {
+		return service.getAccountBalances();
 	}
 }

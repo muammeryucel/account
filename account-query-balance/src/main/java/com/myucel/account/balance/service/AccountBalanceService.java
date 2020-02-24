@@ -1,29 +1,31 @@
 package com.myucel.account.balance.service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.myucel.account.balance.domain.AccountBalanceRepository;
 import com.myucel.account.balance.domain.AccountBalanceProjection;
+import com.myucel.account.balance.query.FindAllQuery;
+import com.myucel.account.balance.query.FindByAccountIdQuery;
 
 @Service
-@Transactional(readOnly = true)
 public class AccountBalanceService {
 
-	private final AccountBalanceRepository repository;
+	private QueryGateway gateway;
 
-	public AccountBalanceService(AccountBalanceRepository repository) {
+	public AccountBalanceService(QueryGateway gateway) {
 		super();
-		this.repository = repository;
+		this.gateway = gateway;
 	}
 
-	public List<AccountBalanceProjection> getAccountBalances() {
-		return repository.findProjectionBy();
+	public CompletableFuture<List<AccountBalanceProjection>> getAccountBalances() {
+		return gateway.query(new FindAllQuery(), ResponseTypes.multipleInstancesOf(AccountBalanceProjection.class));
 	}
 
-	public AccountBalanceProjection getAccountBalance(String accountId) {
-		return repository.findProjectionByAccountId(accountId);
+	public CompletableFuture<AccountBalanceProjection> getAccountBalance(String accountId) {
+		return gateway.query(new FindByAccountIdQuery(accountId), AccountBalanceProjection.class);
 	}
 }
