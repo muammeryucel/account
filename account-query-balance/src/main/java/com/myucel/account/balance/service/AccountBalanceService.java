@@ -1,12 +1,12 @@
 package com.myucel.account.balance.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.myucel.account.balance.domain.AccountBalanceRepository;
+import com.myucel.account.balance.domain.AccountBalanceProjection;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,11 +19,11 @@ public class AccountBalanceService {
 		this.repository = repository;
 	}
 
-	public List<AccountBalanceDTO> getAccountBalances() {
-		return repository.findAll().stream().map(AccountBalanceDTO::of).collect(Collectors.toList());
+	public List<AccountBalanceProjection> getAccountBalances() {
+		return repository.findProjectionBy();
 	}
 
-	public AccountBalanceDTO getAccountBalance(String accountId) {
-		return AccountBalanceDTO.of(repository.findByAccountId(accountId));
+	public AccountBalanceProjection getAccountBalance(String accountId) {
+		return repository.findProjectionByAccountId(accountId);
 	}
 }
