@@ -5,7 +5,6 @@ import java.util.Collections;
 import org.axonframework.extensions.amqp.eventhandling.AMQPMessageConverter;
 import org.axonframework.extensions.amqp.eventhandling.spring.SpringAMQPMessageSource;
 import org.axonframework.springboot.autoconfig.AxonServerAutoConfiguration;
-import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AbstractExchange;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Binding.DestinationType;
@@ -33,7 +32,6 @@ public class RabbitConfig {
 	private static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 	private static final String CONSISTENT_HASH_SUFFIX = ".consistent.hash";
 	private static final String CONSISTENT_HASH_QUEUE_TYPE = "x-consistent-hash";
-	private static final Long RETRY_COUNT = 3L;
 
 	@Bean
 	public SpringAMQPMessageSource amqpMessageSource(AMQPMessageConverter messageConverter) {
@@ -42,14 +40,7 @@ public class RabbitConfig {
 			@Override
 			@RabbitListener(queues = "${application.queue}")
 			public void onMessage(Message message, Channel channel) {
-				try {
-					super.onMessage(message, channel);
-				} catch (Exception ex) {
-					if (message.getMessageProperties().getDeliveryTag() > RETRY_COUNT) {
-						throw new AmqpRejectAndDontRequeueException(ex);
-					}
-					throw ex;
-				}
+				super.onMessage(message, channel);
 			}
 		};
 	}
@@ -106,4 +97,12 @@ public class RabbitConfig {
 		return new Binding(queue, DestinationType.QUEUE, exchange + CONSISTENT_HASH_SUFFIX, "1",
 				Collections.emptyMap());
 	}
+
+//	@Bean
+//	public MessageRecoverer testMessageRecoverer() {
+//		return (message, cause) -> {
+//			throw new AmqpRejectAndDontRequeueException(cause);
+//		};
+//	}
+
 }

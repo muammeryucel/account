@@ -18,6 +18,12 @@ logging:
 ---
 spring:
   profiles: rabbit
+  rabbitmq:
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
 application:
   exchange: account.events
   queue: account.info.${server.port}
