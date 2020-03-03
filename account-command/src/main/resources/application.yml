@@ -17,7 +17,28 @@ logging:
   level: 
     org.axonframework: debug
 #    org.springframework.transaction: debug
-#    org.springframework.orm.jpa: debug 
+#    org.springframework.orm.jpa: debug
+axon:
+  metrics:
+    auto-configuration:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 
+          - metrics
+          - prometheus
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 ---
 spring:

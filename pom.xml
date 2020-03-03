@@ -40,6 +40,18 @@
 				<artifactId>axon-spring-boot-starter</artifactId>
 				<version>${axon.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.axonframework</groupId>
+				<artifactId>axon-metrics</artifactId>
+				<version>${axon.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.axonframework</groupId>
+				<artifactId>axon-micrometer</artifactId>
+				<version>${axon.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.axonframework.extensions.amqp</groupId>
 				<artifactId>axon-amqp-spring-boot-autoconfigure</artifactId>
