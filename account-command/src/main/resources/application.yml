@@ -22,7 +22,6 @@ axon:
   metrics:
     auto-configuration:
       enabled: true
-
 management:
   endpoints:
     web:
