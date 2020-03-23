@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: account-query-info
+  name: account-query-info
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-query-info
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: account-query-info
+    spec:
+      containers:
+      - image: muammeryucel/account-query-info
+        name: account-query-info
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: account-query-info
+  name: account-query-info
+spec:
+  ports:
+  - name: 8082-8082
+    port: 8082
+    protocol: TCP
+    targetPort: 8082
+  selector:
+    app: account-query-info
+  type: ClusterIP
+status:
+  loadBalancer: {}

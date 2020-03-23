@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: account-query-balance
+  name: account-query-balance
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-query-balance
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: account-query-balance
+    spec:
+      containers:
+      - image: muammeryucel/account-query-balance
+        name: account-query-balance
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: account-query-balance
+  name: account-query-balance
+spec:
+  ports:
+  - name: 8081-8081
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: account-query-balance
+  type: ClusterIP
+status:
+  loadBalancer: {}

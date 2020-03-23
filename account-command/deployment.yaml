@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: account-command
+  name: account-command
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-command
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: account-command
+    spec:
+      containers:
+      - image: muammeryucel/account-command
+        name: account-command
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: account-command
+  name: account-command
+spec:
+  ports:
+  - name: 8080-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: account-command
+  type: ClusterIP
+status:
+  loadBalancer: {}
