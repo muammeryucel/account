@@ -6,6 +6,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.myucel.account.api.activation.ActivationRequestedEvent;
 import com.myucel.account.api.balance.DepositCommand;
@@ -37,7 +38,11 @@ public class AccountService {
 		commandGateway.sendAndWait(new SendMoneyCommand(senderId, recipientId, amount));
 	}
 
+	@Transactional
 	public void deposit(String accountId, Long version, BigDecimal amount) {
+		
+		// rebate kısımlarını hesapla ve oluştur
+				
 		commandGateway.sendAndWait(new DepositCommand(accountId, version, amount));
 	}
 

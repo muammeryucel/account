@@ -3,19 +3,22 @@ package com.myucel.account.command;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.deadline.DeadlineManager;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.eventsourcing.conflictresolution.ConflictResolver;
 import org.axonframework.eventsourcing.conflictresolution.Conflicts;
 import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.AggregateMember;
 import org.axonframework.spring.stereotype.Aggregate;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.myucel.account.api.activation.AccountActivatedEvent;
 import com.myucel.account.api.activation.ActivateAccountCommand;
@@ -38,6 +41,9 @@ import com.myucel.account.command.exception.UnexpectedAccountStatusException;
 @Aggregate(snapshotTriggerDefinition = "defaultSnapshotTriggerDefinition")
 public class Account {
 
+	static final String REBATE_EXPIRATION_DEADLINE = "rebate-expiration";
+	private static final Duration REBATE_EXPIRATION_TIMEOUT = Duration.ofSeconds(10);
+
 	private static final List<Class<? extends Object>> BALANCE_CHANGING_EVENT_TYPES = Arrays
 			.asList(DepositedEvent.class, WithdrawnEvent.class, MoneySentEvent.class, MoneyReceivedEvent.class);;
 
@@ -52,18 +58,24 @@ public class Account {
 
 	private AccountStatus status;
 
+	@AggregateMember
+	private List<Rebate> rebates;
+
+	@Autowired
+	private transient DeadlineManager deadlineManager;
+
 	public Account() {
 		// Required by Axon
 	}
 
 	@CommandHandler
-	public Account(CreateAccountCommand command) {		
+	public Account(CreateAccountCommand command) {
 		apply(new AccountCreatedEvent(command.getAccountId(), command.getPhoneNumber(), command.getInitialBalance()));
 	}
 
 	@EventSourcingHandler
 	public void on(AccountCreatedEvent event) {
-		
+
 //		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 //			@Override
 //			public void beforeCommit(boolean readOnly) {
@@ -71,10 +83,11 @@ public class Account {
 //				throw new RuntimeException("Exception thrown on commit!");
 //			}
 //		});
-		
+
 		this.accountId = event.getAccountId();
 		this.balance = event.getInitialBalance();
 		this.status = AccountStatus.ACTIVATION_REQUIRED;
+		this.rebates = new ArrayList<>();
 	}
 
 	@CommandHandler
@@ -103,12 +116,20 @@ public class Account {
 	public void handle(DepositCommand command, ConflictResolver conflictResolver) {
 		conflictResolver.detectConflicts(balanceChangingEventMatching());
 		assertStatus(AccountStatus.ACTIVE);
-		apply(new DepositedEvent(accountId, command.getAmount()));
+		deadlineManager.schedule(REBATE_EXPIRATION_TIMEOUT, REBATE_EXPIRATION_DEADLINE, command.getDepositId());
+		apply(new DepositedEvent(accountId, command.getDepositId(), command.getAmount()));
 	}
 
 	@EventSourcingHandler
 	public void on(DepositedEvent event) {
 		addToBalance(event.getAmount());
+		createRebate(event.getDepositId(), event.getAmount());
+	}
+
+	private void createRebate(String depositId, BigDecimal amount) {
+		BigDecimal rebateAmount = amount.divide(BigDecimal.TEN);
+		Rebate rebate = new Rebate(depositId, rebateAmount);
+		rebates.add(rebate);
 	}
 
 	@CommandHandler
@@ -120,7 +141,8 @@ public class Account {
 
 	@EventSourcingHandler
 	public void on(WithdrawnEvent event) {
-		subtractFromBalance(event.getAmount());
+		BigDecimal amount = event.getAmount();
+		subtractFromBalance(amount);
 	}
 
 	@CommandHandler
