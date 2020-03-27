@@ -15,7 +15,8 @@ spring:
       enabled: true
 logging:
   level: 
-    org.axonframework: debug
+    root: error
+#    org.axonframework: debug
 #    org.springframework.transaction: debug
 #    org.springframework.orm.jpa: debug
 axon:

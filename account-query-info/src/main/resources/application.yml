@@ -13,7 +13,8 @@ spring:
       enabled: true
 logging:
   level:
-    org.axonframework: debug
+    root: error
+#    org.axonframework: debug
 axon:
   metrics:
     auto-configuration:

@@ -25,9 +25,8 @@ public class AccountController {
 	public ResponseEntity<?> createAccount(@RequestParam("phone") String phoneNumber,
 			@RequestParam("balance") BigDecimal initialBalance) {
 		String accountId = service.createAccount(phoneNumber, initialBalance);
-		return ResponseEntity.created(
-				ServletUriComponentsBuilder.fromCurrentRequest().path("/{accountId}").buildAndExpand(accountId).toUri())
-				.build();
+		return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{accountId}")
+				.buildAndExpand(accountId).toUri()).build();
 	}
 
 	@PostMapping("/activate/{phone}")
@@ -45,8 +44,8 @@ public class AccountController {
 	}
 
 	@PostMapping("/deposit/{accountId}/{version}")
-	public ResponseEntity<?> deposit(@PathVariable("accountId") String accountId,
-			@PathVariable("version") Long version, @RequestParam("amount") BigDecimal amount) {
+	public ResponseEntity<?> deposit(@PathVariable("accountId") String accountId, @PathVariable("version") Long version,
+			@RequestParam("amount") BigDecimal amount) {
 		service.deposit(accountId, version, amount);
 		return ResponseEntity.ok().build();
 	}

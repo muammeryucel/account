@@ -45,10 +45,10 @@ public class AccountService {
 		commandGateway.sendAndWait(new WithdrawCommand(accountId, version, amount));
 	}
 
-	@EventHandler
-	public void handle(Object event) {
-		System.out.println("Event: " + event);
-		//throw new RuntimeException("Exception thrown whilst event handling!");
-	}
+//	@EventHandler
+//	public void handle(Object event) {
+//		System.out.println("Event: " + event);
+//		//throw new RuntimeException("Exception thrown whilst event handling!");
+//	}
 
 }

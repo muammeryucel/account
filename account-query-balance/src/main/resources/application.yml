@@ -8,13 +8,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   h2:
     console:
       enabled: true
 logging:
   level:
-    org.axonframework: debug
+    root: error
+#    org.axonframework: debug
 axon:
   metrics:
     auto-configuration:
