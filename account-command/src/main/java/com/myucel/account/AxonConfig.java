@@ -3,7 +3,7 @@ package com.myucel.account;
 import org.axonframework.common.transaction.TransactionManager;
 import org.axonframework.config.ConfigurationScopeAwareProvider;
 import org.axonframework.deadline.DeadlineManager;
-import org.axonframework.deadline.SimpleDeadlineManager;
+import org.axonframework.deadline.quartz.QuartzDeadlineManager;
 import org.axonframework.eventhandling.DomainEventMessage;
 import org.axonframework.eventhandling.ListenerInvocationErrorHandler;
 import org.axonframework.eventhandling.PropagatingErrorHandler;
@@ -14,6 +14,7 @@ import org.axonframework.extensions.amqp.eventhandling.RoutingKeyResolver;
 import org.axonframework.spring.config.AxonConfiguration;
 import org.axonframework.springboot.autoconfig.AxonServerAutoConfiguration;
 import org.axonframework.springboot.autoconfig.JpaEventStoreAutoConfiguration;
+import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,8 @@ public class AxonConfig {
 	}
 
 	@Bean
-	public DeadlineManager deadlineManager(AxonConfiguration configuration, TransactionManager transactionManager) {
-		return SimpleDeadlineManager.builder().scopeAwareProvider(new ConfigurationScopeAwareProvider(configuration))
+	public DeadlineManager deadlineManager(AxonConfiguration configuration, TransactionManager transactionManager, Scheduler scheduler) {
+		return QuartzDeadlineManager.builder().scheduler(scheduler).scopeAwareProvider(new ConfigurationScopeAwareProvider(configuration))
 				.transactionManager(transactionManager).build();
 	}
 

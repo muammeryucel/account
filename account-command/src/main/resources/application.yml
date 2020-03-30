@@ -13,6 +13,8 @@ spring:
   h2:
     console:
       enabled: true
+  quartz:
+    job-store-type: jdbc
 logging:
   level: 
     root: error
