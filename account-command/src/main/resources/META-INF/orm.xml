@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings
+  xmlns="http://java.sun.com/xml/ns/persistence/orm"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
+  version="2.0">
+
+  <entity class="org.axonframework.eventsourcing.eventstore.jpa.DomainEventEntry">
+    <attribute-override name="payload">
+      <column name="payload" column-definition="BYTEA"/>
+    </attribute-override>
+    <attribute-override name="metaData">
+      <column name="metadata" column-definition="BYTEA"/>
+    </attribute-override>
+  </entity>
+
+  <entity class="org.axonframework.eventsourcing.eventstore.jpa.SnapshotEventEntry">
+    <attribute-override name="payload">
+      <column name="payload" column-definition="BYTEA"/>
+    </attribute-override>
+    <attribute-override name="metaData">
+      <column name="metadata" column-definition="BYTEA"/>
+    </attribute-override>
+  </entity>
+
+  <entity class="org.axonframework.modelling.saga.repository.jpa.SagaEntry">
+    <attribute-override name="serializedSaga">
+      <column name="serializedsaga" column-definition="BYTEA"/>
+    </attribute-override>
+  </entity>
+
+  <entity class="org.axonframework.eventhandling.tokenstore.jpa.TokenEntry">
+    <attribute-override name="token">
+      <column name="token" column-definition="BYTEA"/>
+    </attribute-override>
+  </entity>
+
+</entity-mappings>
