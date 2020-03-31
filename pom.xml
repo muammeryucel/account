@@ -20,8 +20,8 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<axon.version>4.2.1</axon.version>
-		<axon-amqp.version>4.2</axon-amqp.version>
+		<axon.version>4.3.1</axon.version>
+		<axon-amqp.version>4.3</axon-amqp.version>
 		<axon-kafka.version>4.0-RC2</axon-kafka.version>
 		<swagger.version>2.9.2</swagger.version>
 	</properties>
@@ -38,6 +38,12 @@
 			<dependency>
 				<groupId>org.axonframework</groupId>
 				<artifactId>axon-spring-boot-starter</artifactId>
+				<version>${axon.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.axonframework</groupId>
+				<artifactId>axon-test</artifactId>
 				<version>${axon.version}</version>
 			</dependency>
 

@@ -35,6 +35,11 @@
 
 		<dependency>
 			<groupId>org.axonframework</groupId>
+			<artifactId>axon-test</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.axonframework</groupId>
 			<artifactId>axon-metrics</artifactId>
 		</dependency>
 		<dependency>
