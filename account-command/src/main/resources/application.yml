@@ -70,3 +70,24 @@ axon:
     producer:
       transaction-id-prefix: account        #Enables kafka's transaction support
     
+---
+spring:
+  profiles: postgresql
+  h2:
+    console:
+      enabled: false  
+  datasource:
+    url: jdbc:postgresql://localhost/account_command
+    username: postgres
+    password: postgres
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate.dialect: com.myucel.account.postgresql.AxonPostgreSQLDialect
+  quartz:
+    job-store-type: memory
+    
+    
+      

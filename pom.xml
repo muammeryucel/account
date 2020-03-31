@@ -24,6 +24,7 @@
 		<axon-amqp.version>4.3</axon-amqp.version>
 		<axon-kafka.version>4.0-RC2</axon-kafka.version>
 		<swagger.version>2.9.2</swagger.version>
+		<postgresql.version>42.2.11</postgresql.version>
 	</properties>
 
 	<dependencyManagement>
@@ -63,11 +64,13 @@
 				<artifactId>axon-amqp-spring-boot-autoconfigure</artifactId>
 				<version>${axon-amqp.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>org.axonframework.extensions.kafka</groupId>
 				<artifactId>axon-kafka-spring-boot-starter</artifactId>
 				<version>${axon-kafka.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>io.springfox</groupId>
 				<artifactId>springfox-swagger2</artifactId>
@@ -78,6 +81,13 @@
 				<artifactId>springfox-swagger-ui</artifactId>
 				<version>${swagger.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgresql.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
