@@ -24,7 +24,7 @@
 		<axon-amqp.version>4.3</axon-amqp.version>
 		<axon-kafka.version>4.0-RC2</axon-kafka.version>
 		<swagger.version>2.9.2</swagger.version>
-		<postgresql.version>42.3.3</postgresql.version>
+		<postgresql.version>42.3.8</postgresql.version>
 	</properties>
 
 	<dependencyManagement>
